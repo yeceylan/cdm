@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FEV Example Label</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400" rel="stylesheet" />
+    <style>
+        @page { size: A4; margin: 10mm; }
+
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #fff;
+            color: #000;
+        }
+
+        .page {
+            width: 190mm;
+            margin: 0 auto;
+        }
+
+        .title { font-weight: 700; margin: 6mm 0 4mm 6mm; }
+
+        .label {
+            width: 190mm;
+            border: 1.2px solid #000;
+            padding: 0;
+        }
+
+        /* Header: first two rows full width */
+        .head-band { border-bottom: 1.2px solid #000; }
+        .head-row1 {
+            padding: 2mm 3mm;
+            font-size: 3.5mm;
+            font-weight: 700;
+        }
+        .head-row2 {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 3mm;
+            padding: 1.5mm 3mm 2mm 3mm;
+            font-size: 3.2mm;
+        }
+        .head-row2 .fab { font-size: 3mm; }
+        .head-row2 .vin { text-align: center; font-family: "Courier New", monospace; font-weight: 700; }
+
+        /* Barcode stripes reused */
+        .barcode {
+            width: 100%;
+            height: 12mm;
+            margin: 2mm 0 1mm 0;
+            background: repeating-linear-gradient(
+                to right,
+                #000 0,
+                #000 1.1px,
+                #fff 1.1px,
+                #fff 2.7px
+            );
+        }
+        .barcode-number { font-family: "Courier New", monospace; font-size: 3.4mm; font-weight: 700; }
+        .h5f { margin-top: 2mm; font-weight: 700; text-align: right; }
+
+        /* Three-column area under header */
+        .three-cols {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr;
+            border-top: 1.2px solid #000;
+            border-bottom: 1.2px solid #000;
+        }
+        .col-left { padding: 4mm; border-right: 1.2px solid #000; font-size: 3.2mm; line-height: 1.35; }
+        .presence { display: grid; grid-template-columns: auto 1fr; gap: 2mm; align-items: start; }
+        .presence .mark { font-size: 6mm; font-weight: 700; }
+        .col-center { padding: 3mm; border-right: 1.2px solid #000; text-align: center; }
+        .col-right { padding: 4mm; display: flex; flex-direction: column; }
+        .col-right .right-top { text-align: right; }
+        .time { font-size: 8mm; font-weight: 700; line-height: 1; }
+        .date { font-size: 6mm; font-weight: 700; }
+        .right-extra { margin-top: 2mm; text-align: right; font-size: 3.2mm; }
+        .country { margin-top: auto; text-align: right; font-weight: 700; }
+
+        /* Item grid with 6x6 table layout for equal sizing */
+        .items { border-top: 1.2px solid #000; border-bottom: 1.2px solid #000; }
+        .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .items-table td { border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 0; vertical-align: top; width: 16.666%; height: 22mm; }
+        .items-table td:last-child { border-right: none; }
+        .items-table tr:last-child td { border-bottom: none; }
+        .items-table tr { height: 22mm; }
+        .box { display: grid; grid-template-columns: 1fr 0.4fr; grid-template-rows: 1fr 0.25fr 0.25fr; height: 100%; width: 100%; }
+        .icon-area { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .mark-area { border-left: 1px solid #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .desc1 { border-top: 1px solid #000; padding: 0.5mm; font-size: 2.3mm; line-height: 1; text-align: center; grid-column: 1 / -1; overflow: hidden; text-overflow: ellipsis; }
+        .desc2 { border-top: 1px solid #000; padding: 0.5mm; font-size: 2.3mm; line-height: 1; text-align: center; grid-column: 1 / -1; overflow: hidden; text-overflow: ellipsis; }
+        .mark { font-size: 6mm; font-weight: 700; }
+        .icon { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 10mm; line-height: 1; color: #000; }
+        .grid-caption { text-align: center; font-size: 3.2mm; padding: 2mm 0; border-top: 1px solid #000; border-bottom: 1px solid #000; }
+
+        /* Bottom section - simple layout without internal borders */
+        .bottom {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            border-top: 1.2px solid #000;
+        }
+        
+        .left-section {
+            padding: 0;
+            margin: 0;
+            position: relative;
+        }
+        .left-section .header-text { font-size: 2.2mm; margin: 0; }
+        .left-section h4 { margin: 0; font-size: 3.2mm; font-weight: 700; }
+        .left-section .dash-lines { font-size: 2.4mm; line-height: 1; margin: 0; }
+        .left-section .code-big { font-size: 7mm; font-weight: 700; margin: 0; }
+        .left-section .rueda { font-size: 2.8mm; font-weight: 700; margin: 0; }
+        
+        .right-section {
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-areas: 
+                "tt00 rhnlh"
+                "barcode order";
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 0;
+        }
+        
+        .tt-area { 
+            grid-area: tt00;
+            font-size: 2.4mm;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+        }
+        .tt-area .title { font-size: 4mm; font-weight: 700; margin: 0; }
+        
+        .rhnlh-area { 
+            grid-area: rhnlh;
+            font-size: 2.4mm;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+        }
+        .rhnlh-area .title { font-size: 4mm; font-weight: 700; margin: 0; }
+        .rhnlh-area .bold-text { font-size: 3.2mm; font-weight: 700; }
+        
+        .barcode-area { 
+            grid-area: barcode;
+            display: flex;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .order-area { 
+            grid-area: order;
+            font-size: 2.4mm;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+        }
+        .order-area .order-num { font-size: 8mm; font-weight: 700; }
+        .order-area .pji { margin: 0; }
+        .order-area .pji-num { font-size: 4.5mm; font-weight: 700; }
+
+        @media print {
+            .title { display: none; }
+            .page { width: 190mm; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="title">FEV EXAMPLE</div>
+        <div class="label">
+            <div class="head-band">
+                <div class="head-row1">PRINCIPAUX EQUIPEMENTS MOBILES EPECIFIQUE A CE VEHICULES</div>
+                <div class="head-row2">
+                    <div class="fab">N° FABRICACION/E01014</div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            <div class="three-cols">
+                <div class="col-left">
+                    <div>Vehicule Identifiant</div>
+                    <div class="presence" style="margin-top:1mm;">
+                        <div class="mark">N</div>
+                        <div>Presence client</div>
+                    </div>
+                    <div style="margin-top:1mm;">Date Edition: <strong>23 . 05 . 14</strong></div>
+                    <div>Heure Edition: <strong>14 : 49</strong></div>
+                    <div style="margin-top:1mm;">Date MADC Eng: <strong>26 . 04 . 2023</strong></div>
+                    <div>CONTRAMARCA: <strong>8</strong></div>
+                    <div>Date MADA Eng: <strong>23 / 2023</strong></div>
+                </div>
+                <div class="col-center">
+                    <div class="barcode-number">VF1RHN00XXX07956</div>
+                    <div class="barcode"></div>
+                    <div class="h5f">H5F</div>
+                </div>
+                <div class="col-right">
+                    <div class="right-top">
+                        <div style="font-weight:700;">PREVISTO MADC DSTAR</div>
+                        <div class="time">06 : 44</div>
+                        <div class="date">24 - 05 - 2023</div>
+                    </div>
+                    <div class="right-extra">
+                        <div>Fecha prevista larga: <strong>24 Mayo 2023</strong></div>
+                        <div>Otra fecha extendida: <strong>26 Abril 2023</strong></div>
+                    </div>
+                    <div class="country">FRANCIA</div>
+                </div>
+            </div>
+
+            <div class="items">
+                <table class="items-table">
+                    <tr>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">key</span></div>
+                                <div class="mark-area"><span class="mark">2</span></div>
+                                <div class="desc1">Carte clé + piles</div>
+                                <div class="desc2">Key cards + batts</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">local_drink</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Allume cigare</div>
+                                <div class="desc2">Cigarette lighter</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">radio</span></div>
+                                <div class="mark-area"><span class="mark">X</span></div>
+                                <div class="desc1">AUTORADIO CD/MP3</div>
+                                <div class="desc2">Radio CD/MP3</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">airline_seat_recline_normal</span></div>
+                                <div class="mark-area"><span class="mark">X</span></div>
+                                <div class="desc1">Coussin pour conducteur</div>
+                                <div class="desc2">Seat pad driver side</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">construction</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Antenne de pavillon</div>
+                                <div class="desc2">Roof antenna</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">folder</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Porte documents</div>
+                                <div class="desc2">Document holder</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">book</span></div>
+                                <div class="mark-area"><span class="mark">X</span></div>
+                                <div class="desc1">Livret de bord</div>
+                                <div class="desc2">Log book</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">tire_repair</span></div>
+                                <div class="mark-area"><span class="mark">X</span></div>
+                                <div class="desc1">Enjoliveurs / roues</div>
+                                <div class="desc2">Wheel trims / wheels</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">local_drink</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Gourde</div>
+                                <div class="desc2">Bottle</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1"></div>
+                                <div class="desc2"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="text-align: center; font-size: 3.2mm; padding: 1mm 0; border-top: 1px solid #000; border-bottom: 1px solid #000; height: auto; line-height: 1;">
+                        <td colspan="6" style="text-align: center; font-size: 3.2mm; padding: 1mm 0; border-top: 1px solid #000; border-bottom: 1px solid #000; height: auto; line-height: 1;">Sac fermé – Closed bag – Bolsa cerrada</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">cable</span></div>
+                                <div class="mark-area"><span class="mark">X</span></div>
+                                <div class="desc1">Antenne de démarrage</div>
+                                <div class="desc2">Aerial de démarrage</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">construction</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Boîte à outils</div>
+                                <div class="desc2">Tool box</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">settings</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Pièce de rechange</div>
+                                <div class="desc2">Replacement part</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">label</span></div>
+                                <div class="mark-area"><span class="mark">X</span></div>
+                                <div class="desc1">Étiquette de contrôle</div>
+                                <div class="desc2">Control label</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">inventory_2</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Matériels</div>
+                                <div class="desc2">Materials</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">monitor</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Kit de démonte</div>
+                                <div class="desc2">Service kit</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">inventory</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Documents techniques</div>
+                                <div class="desc2">Technical docs</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">backpack</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Film à baggages</div>
+                                <div class="desc2">Baggage film</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">settings</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Clé plateau - outillagé post</div>
+                                <div class="desc2">Adapter key - tooled post</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">view_module</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Toit vitres avant</div>
+                                <div class="desc2">Front glass roof</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">view_module</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Toit vitres arrière</div>
+                                <div class="desc2">Rear glass roof</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">
+                                <div class="icon-area"><span class="icon material-symbols-outlined">cable</span></div>
+                                <div class="mark-area"></div>
+                                <div class="desc1">Cable multi - 9</div>
+                                <div class="desc2">Multi cable - 9</div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="bottom">
+                <div class="left-section">
+                    <div class="header-text">MISC STUFF 2010 2001 Y8 ...PROPRIETE RENAULT</div>
+                    <h4>RENAULT TECH</h4>
+                    <div class="dash-lines" style="padding-left: 2em;">
+                        <div> &nbsp;— — —PAVEH</div>
+                        <div>&nbsp;— — —</div>
+                        <div> &nbsp;— — — —NOLIE</div>
+                        <div>&nbsp;— — — —</div>
+                    </div>
+                    <div class="code-big">P2-93 E06W</div>
+                    <div class="rueda">RUEDA ALUM 235 45 R2</div>
+                </div>
+                <div class="right-section">
+                    <div class="tt-area">
+                        <div class="title">TT00</div>
+                        </br>
+                        </br>
+                        <div>Freno ASS:</div>
+                        <div>Calc. Camara:909R</div>
+                    </div>
+                    <div class="rhnlh-area">
+                        <div class="title">RHNLH EA4</div>
+                        <div>Espejo Int:450R<span class="bold-text">AR HYB05</span></div>
+                        <div>Parabrisas:399R<span class="bold-text">D9</span></div>
+                        <div class="bold-text">CONDO</div>
+                    </div>
+                    <div class="barcode-area">
+                        <div class="barcode"></div>
+                    </div>
+                    <div class="order-area">
+                        <div>N° Orden <span class="order-num">7485</span></div>
+                        <div class="pji">PJI: <span class="pji-num">1530097 - 19</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
